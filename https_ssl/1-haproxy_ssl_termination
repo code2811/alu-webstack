@@ -1,0 +1,26 @@
+# Global settings
+global
+    log 127.0.0.1 local0
+    chroot /var/lib/haproxy
+    pidfile /var/run/haproxy.pid
+    maxconn 200
+
+# Default settings
+defaults
+    log     global
+    option  httplog
+    timeout connect 5000ms
+    timeout client  50000ms
+    timeout server  50000ms
+
+# SSL termination for port 443
+frontend https_front
+    bind *:443 ssl crt /etc/letsencrypt/live/www.example.com/fullchain.pem key /etc/letsencrypt/live/www.example.com/privkey.pem
+    option http-server-close
+    option forwardfor
+    default_backend web_backend
+
+# Backend configuration to forward unencrypted traffic
+backend web_backend
+    server web_server 127.0.0.1:80 check
+
