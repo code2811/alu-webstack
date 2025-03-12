@@ -1,3 +1,4 @@
+cat > 1-haproxy_ssl_termination << 'EOF'
 global
     log /dev/log    local0
     log /dev/log    local1 notice
@@ -12,7 +13,7 @@ global
     ca-base /etc/ssl/certs
     crt-base /etc/ssl/private
 
-    # Default ciphers to use on SSL-enabled listening sockets.
+    # SSL configurations
     ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
     ssl-default-bind-options no-sslv3 no-tlsv10 no-tlsv11 no-tls-tickets
 
@@ -33,14 +34,21 @@ defaults
     errorfile 504 /etc/haproxy/errors/504.http
 
 frontend www-https
-    bind *:443 ssl crt /etc/haproxy/certs/www.yourdomain.com.pem
+    # Ensures HAProxy is listening on port TCP 443 (HTTPS)
+    bind *:443 ssl crt /etc/haproxy/certs/www.holberton.online.pem
+    
+    # Ensures HAProxy is accepting HTTPS traffic
     mode http
     option httplog
     option forwardfor
+    
+    # Ensures that HAProxy will return the / of your web server
     default_backend web-backend
 
 backend web-backend
     mode http
     balance roundrobin
+    # Ensures when querying the root, the returned page contains "Holberton School"
     server web-01 web-01-server-ip:80 check
     server web-02 web-02-server-ip:80 check
+EOF
