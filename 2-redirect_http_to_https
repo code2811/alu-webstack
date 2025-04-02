@@ -1,11 +1,11 @@
 frontend http_front
     bind *:80
-    http-request redirect scheme https code 301 if !{ ssl_fc }
+    redirect scheme https code 301 if !{ ssl_fc }
 
 frontend https_front
-    bind *:443 ssl crt /etc/haproxy/certs/your_certificate.pem
-    default_backend web_servers
+    bind *:443 ssl crt /etc/ssl/certs/your_cert.pem
+    # Your backend configuration goes here
+    default_backend your_backend
 
-backend web_servers
-    server web1 192.168.1.100:443 ssl verify none
-
+backend your_backend
+    server web1 127.0.0.1:8080 check
