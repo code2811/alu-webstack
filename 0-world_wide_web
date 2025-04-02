@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #!/usr/bin/env bash
 # Displays information about subdomains
 
@@ -29,3 +30,44 @@ else
     # If a specific subdomain is specified, display information for that subdomain only
     get_subdomain_info "$domain" "$subdomain"
 fi
+=======
+#!/bin/bash
+
+# Function to query DNS records for a subdomain
+query_dns() {
+    local domain=$1
+    local subdomain=$2
+    # Query the A record for the given subdomain and domain
+    result=$(dig +short "$subdomain.$domain")
+    
+    # Check if a result was found
+    if [ -n "$result" ]; then
+        # Output the subdomain type and its destination
+        echo "The subdomain $subdomain is a A record and points to $result"
+    else
+        # If no result was found, print an error message
+        echo "No A record found for $subdomain.$domain"
+    fi
+}
+
+# Main logic of the script
+if [ -z "$1" ]; then
+    echo "Domain is required."
+    exit 1
+fi
+
+domain=$1
+subdomain=$2
+
+# If subdomain is not provided, display for www, lb-01, web-01, and web-02
+if [ -z "$subdomain" ]; then
+    query_dns "$domain" "www"
+    query_dns "$domain" "lb-01"
+    query_dns "$domain" "web-01"
+    query_dns "$domain" "web-02"
+else
+    # If a subdomain is specified, display only for that subdomain
+    query_dns "$domain" "$subdomain"
+fi
+
+>>>>>>> 14ca6fcd5ab2530aeea4108f27d030407589437c
